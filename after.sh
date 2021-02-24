@@ -25,6 +25,12 @@ installDeepin(){
     systemctl enable lightdm &> /dev/null
     sed -i "s/#greeter-session=example-gtk-gnome/greeter-session=lightdm-deepin-greeter/g" /etc/lightdm/lightdm.conf
 }
+installUKUI(){
+    dialog --title "Installing" --infobox "Installing UKUI, please wait" 12 35
+    pacman -S ukui mate-terminal --noconfirm 1> /dev/null 2> ./errorfile || funerror "pacmanerror" 2
+    systemctl enable lightdm &> /dev/null
+    sed -i "s/#greeter-session=example-gtk-gnome/greeter-session=ukui-greeter/g" /etc/lightdm/lightdm.conf
+}
 setfont /usr/share/kbd/consolefonts/iso01-12x22.psfu.gz
 ping -c 4 blog.jinjiang.fun 1> /dev/null 2> ./errorfile || funerror "NetworkError!" 1
 ADMIN_USER=$(dialog --output-fd 1 --title "ADD_User" --no-cancel --inputbox "User name:" 12 35)
@@ -44,7 +50,7 @@ then
     systemctl enable iptables ip6tables &> /dev/null
 fi
 
-DESKTOP_ENV=$(dialog --output-fd 1 --title "Select_Desktop" --menu "Select a Desktop" 12 35 5 1 no-desktop 2 XFCE 3 KDE 4 GNOME 5 Deepin)
+DESKTOP_ENV=$(dialog --output-fd 1 --title "Select_Desktop" --menu "Select a Desktop" 12 35 5 1 no-desktop 2 XFCE 3 KDE 4 GNOME 5 Deepin 6 UKUI)
 if [ ${DESKTOP_ENV} != "1" ]
 then
     dialog --title "Installing" --infobox "Installing GPU drive, please wait" 12 35
@@ -81,6 +87,8 @@ LC_COLLATE=C" > /etc/locale.conf
         "4") installGnome
         ;;
         "5") installDeepin
+        ;;
+        "6") installUKUI
         ;;
     esac
 fi
